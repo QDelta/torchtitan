@@ -1,14 +1,13 @@
 # torchtitan Config.toml
-# NOTE: this toml config is a preset for 64 A100 GPUs.
 
 [job]
 dump_folder = "./outputs"
-description = "Llama2 13B training"
+description = "Llama2 271M training"
 
 [profiling]
 enable_profiling = false
 save_traces_folder = "profile_trace"
-profile_freq = 100
+profile_freq = 10
 
 [metrics]
 log_freq = 10
@@ -17,8 +16,8 @@ save_tb_folder = "tb"
 
 [model]
 name = "llama2"
-flavor = "13B"
-norm_type = "rmsnorm"  # [layernorm, np_layernorm, rmsnorm, fused_rmsnorm]
+flavor = "271M"
+norm_type = "rmsnorm"  # layernorm / np_layernorm / rmsnorm / fused_rmsnorm
 tokenizer_path = "./torchtitan/datasets/tokenizer/tokenizer.model"
 
 [optimizer]
@@ -26,16 +25,16 @@ name = "AdamW"
 lr = 3e-4
 
 [training]
-batch_size = 2
-seq_len = 4096
-warmup_steps = 200  # lr scheduler warm up, normally 20% of the train steps
+batch_size = 8
+seq_len = 2048
+warmup_steps = 2  # lr scheduler warm up, normally 20% of the train steps
 max_norm = 1.0  # grad norm clipping
-steps = 1000
+steps = 40
 data_parallel_degree = -1
-tensor_parallel_degree = 1
+tensor_parallel_degree = 1  # dp-only would be sufficient for 7B
 fp8_linear = ""
 compile = false
-dataset = "c4"
+dataset = "c4_mini"
 
 [experimental]
 pipeline_parallel_degree = 1
