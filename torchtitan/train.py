@@ -32,6 +32,8 @@ from torchtitan.tools.profiling import (
     maybe_enable_profiling,
 )
 
+perf_counter = time.perf_counter
+
 
 class Trainer(torch.distributed.checkpoint.stateful.Stateful):
     job_config: JobConfig
@@ -343,11 +345,11 @@ class Trainer(torch.distributed.checkpoint.stateful.Stateful):
                 # If data runs out during gradient accumulation, that
                 # entire step will not be executed.
                 raise DataloaderStopIteration() from ex
-            data_load_start = time.perf_counter()
+            data_load_start = perf_counter()
             input_dict, labels = batch
             self.metrics_processor.ntokens_since_last_log += labels.numel()
             self.metrics_processor.data_loading_times.append(
-                time.perf_counter() - data_load_start
+                perf_counter() - data_load_start
             )
 
             # Move tensors to the appropriate device

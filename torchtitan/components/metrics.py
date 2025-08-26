@@ -23,6 +23,7 @@ from torchtitan.tools.utils import Color, device_module, device_type
 if TYPE_CHECKING:
     from torchtitan.protocols.train_spec import BaseModelArgs
 
+perf_counter = time.perf_counter
 
 # named tuple for passing device memory stats for logging
 DeviceMemStats = namedtuple(
@@ -336,7 +337,7 @@ class MetricsProcessor:
         )
         self.ntokens_since_last_log = 0
         self.data_loading_times = []
-        self.time_last_log = time.perf_counter()
+        self.time_last_log = perf_counter()
         self.device_memory_monitor.reset_peak_stats()
 
         # These variables have to be set later as they depend on other components or model.
@@ -356,7 +357,7 @@ class MetricsProcessor:
     ):
         assert self.num_flops_per_token > 0, "num_flops_per_token must be set"
 
-        time_delta = time.perf_counter() - self.time_last_log
+        time_delta = perf_counter() - self.time_last_log
 
         # tokens per second per device, abbreviated as tps
         tps = self.ntokens_since_last_log / (
@@ -409,7 +410,7 @@ class MetricsProcessor:
 
         self.ntokens_since_last_log = 0
         self.data_loading_times.clear()
-        self.time_last_log = time.perf_counter()
+        self.time_last_log = perf_counter()
         self.device_memory_monitor.reset_peak_stats()
 
     def close(self):
